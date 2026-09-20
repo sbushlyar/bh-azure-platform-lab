@@ -1,33 +1,37 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-  }
-}
+name: Terraform CI
 
-provider "azurerm" {
-  features {}
-}
-resource "azurerm_resource_group" "lab" {
-  name     = "rg-bh-platform-lab"
-  location = "East US"
-}
-resource "azurerm_virtual_network" "lab" {
-  name                = "vnet-bh-platform-lab"
-  address_space       = ["10.10.0.0/16"]
-  location            = azurerm_resource_group.lab.location
-  resource_group_name = azurerm_resource_group.lab.name
-}
-resource "azurerm_subnet" "lab" {
-  name                 = "snet-app"
-  resource_group_name  = azurerm_resource_group.lab.name
-  virtual_network_name = azurerm_virtual_network.lab.name
-  address_prefixes     = ["10.10.1.0/24"]
-}
-resource "azurerm_network_security_group" "lab" {
-  name                = "nsg-app"
-  location            = azurerm_resource_group.lab.location
-  resource_group_name = azurerm_resource_group.lab.name
-}
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: 1f0f603a-e0ed-4e19-9b4d-c9e4f83427a1
+          tenant-id: 4c532d92-1011-4c5b-9eab-cc4e4c69ebea
+          subscription-id: cb41360b-21e3-4b57-b297-f8974cb9adf8
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
