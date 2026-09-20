@@ -43,3 +43,7 @@ resource "azurerm_network_security_group" "lab" {
   location            = azurerm_resource_group.lab.location
   resource_group_name = azurerm_resource_group.lab.name
 }
+resource "azurerm_subnet_network_security_group_association" "lab" {
+  subnet_id                 = azurerm_subnet.lab.id
+  network_security_group_id = azurerm_network_security_group.lab.id
+}
