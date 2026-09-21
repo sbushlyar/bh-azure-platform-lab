@@ -21,7 +21,7 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "lab" {
   name     = "rg-bh-platform-lab"
-  location = "East US"
+  location = "West US 2"
 }
 
 resource "azurerm_virtual_network" "lab" {
