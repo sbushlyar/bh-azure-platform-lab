@@ -47,3 +47,42 @@ resource "azurerm_subnet_network_security_group_association" "lab" {
   subnet_id                 = azurerm_subnet.lab.id
   network_security_group_id = azurerm_network_security_group.lab.id
 }
+resource "azurerm_network_interface" "lab" {
+  name                = "nic-bh-platform-vm01"
+  location            = azurerm_resource_group.lab.location
+  resource_group_name = azurerm_resource_group.lab.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.lab.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+resource "azurerm_linux_virtual_machine" "lab" {
+  name                = "vm-bh-platform-01"
+  resource_group_name = azurerm_resource_group.lab.name
+  location            = azurerm_resource_group.lab.location
+  size                = "Standard_B1s"
+  admin_username      = "azureuser"
+
+  network_interface_ids = [
+    azurerm_network_interface.lab.id
+  ]
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTs1rQ/8VLBwMh0+ln8gbVFnQLCyYTmRnRBQR7y2Iy9 sbush@REMCON"
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts-gen2"
+    version   = "latest"
+  }
+}
