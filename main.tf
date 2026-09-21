@@ -38,10 +38,30 @@ resource "azurerm_subnet" "lab" {
   address_prefixes     = ["10.10.1.0/24"]
 }
 
+resource "azurerm_public_ip" "lab" {
+  name                = "pip-bh-platform-vm01"
+  location            = "West US 2"
+  resource_group_name = azurerm_resource_group.lab.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
 resource "azurerm_network_security_group" "lab" {
   name                = "nsg-app"
-  location = "West US 2"
+  location            = "West US 2"
   resource_group_name = azurerm_resource_group.lab.name
+
+  security_rule {
+    name                       = "Allow-SSH-From-Home"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "67.243.198.91/32"
+    destination_address_prefix = "*"
+  }
 }
 resource "azurerm_subnet_network_security_group_association" "lab" {
   subnet_id                 = azurerm_subnet.lab.id
@@ -56,6 +76,7 @@ resource "azurerm_network_interface" "lab" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.lab.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.lab.id
   }
 }
 resource "azurerm_linux_virtual_machine" "lab" {
