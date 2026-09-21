@@ -62,7 +62,7 @@ resource "azurerm_linux_virtual_machine" "lab" {
   name                = "vm-bh-platform-01"
   resource_group_name = azurerm_resource_group.lab.name
   location            = azurerm_resource_group.lab.location
-  size                = "Standard_B1s"
+  size                = size = "Standard_B2ats_v2"
   admin_username      = "azureuser"
 
   network_interface_ids = [
