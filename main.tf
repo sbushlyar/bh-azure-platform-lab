@@ -21,13 +21,13 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "lab" {
   name     = "rg-bh-platform-lab"
-  location = "West US 2"
+  location = "East US"
 }
 
 resource "azurerm_virtual_network" "lab" {
   name                = "vnet-bh-platform-lab"
   address_space       = ["10.10.0.0/16"]
-  location            = azurerm_resource_group.lab.location
+  location = "West US 2"
   resource_group_name = azurerm_resource_group.lab.name
 }
 
@@ -40,7 +40,7 @@ resource "azurerm_subnet" "lab" {
 
 resource "azurerm_network_security_group" "lab" {
   name                = "nsg-app"
-  location            = azurerm_resource_group.lab.location
+  location = "West US 2"
   resource_group_name = azurerm_resource_group.lab.name
 }
 resource "azurerm_subnet_network_security_group_association" "lab" {
@@ -49,7 +49,7 @@ resource "azurerm_subnet_network_security_group_association" "lab" {
 }
 resource "azurerm_network_interface" "lab" {
   name                = "nic-bh-platform-vm01"
-  location            = azurerm_resource_group.lab.location
+  location = "West US 2"
   resource_group_name = azurerm_resource_group.lab.name
 
   ip_configuration {
@@ -61,7 +61,7 @@ resource "azurerm_network_interface" "lab" {
 resource "azurerm_linux_virtual_machine" "lab" {
   name                = "vm-bh-platform-01"
   resource_group_name = azurerm_resource_group.lab.name
-  location            = azurerm_resource_group.lab.location
+  location = "West US 2"
   size                = "Standard_B2ats_v2"
   admin_username      = "azureuser"
 
