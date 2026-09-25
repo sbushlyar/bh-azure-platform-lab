@@ -85,6 +85,9 @@ resource "azurerm_linux_virtual_machine" "lab" {
   location = "West US 2"
   size                = "Standard_B2ats_v2"
   admin_username      = "azureuser"
+  tags = {
+  Environment = "Lab"
+}
 
   network_interface_ids = [
     azurerm_network_interface.lab.id
